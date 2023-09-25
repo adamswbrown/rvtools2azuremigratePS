@@ -7,7 +7,7 @@ function Read-RVToolsData {
         [switch]$ExcludeTemplates,
         [switch]$ExcludeSRM,
         [switch]$Anonymized,
-        [switch]$EnhancedDiskInfo
+        [switch]$EnhancedDiskInfo = $false
     )
 
     # Constants
@@ -26,7 +26,7 @@ function Read-RVToolsData {
     $DEFAULT_OS_NAME = "Windows Server 2019 Datacenter"
 
     # Logging the initial information using native cmdlets
-    Write-Warning "Input file: $InputFile"
+    Write-Information "Input file: $InputFile"
     Write-Warning "Anonymized: $($Anonymized.IsPresent)"
     Write-Warning "Filter powered-off VMs: $($ExcludePoweredOff.IsPresent)"
     Write-Warning "Filter templates: $($ExcludeTemplates.IsPresent)"
@@ -74,12 +74,18 @@ function Read-RVToolsData {
         }
         $storage_capacity_gb = [math]::Round($storage_capacity / 1024, 2)
 
-        # Disk details
-        $vm_disks = $disk_data[$vmName].Group
-        $disk_details = $vm_disks | ForEach-Object {
-            "Hard disk $($_.Disk): Provisioned: $($_.'Capacity MiB') MiB, In Use: $($_.'In Use MiB') MiB"
-        } -join "; "
 
+
+    if ($EnhancedDiskInfo) {
+        # Disk details
+
+        $disk_data = ($vm_disks | ForEach-Object {
+            "Hard disk $($_.Disk): Provisioned: $($_.'Capacity MiB') MiB, In Use: $($_.'In Use MiB') MiB"
+        }) -join ";"
+    }
+        
+        
+        
         [PSCustomObject]@{
             name              = $vmName
             power_state       = $_.$POWERSTATE_COLUMN_NAME
