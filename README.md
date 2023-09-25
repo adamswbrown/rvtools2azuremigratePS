@@ -41,6 +41,8 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv
 
 Azure Migrate requires CPU and Memory utilization percentages for a more accurate assessment. This tool provides flexibility in specifying these values to better match your environment's actual utilization or to simulate different scenarios.
 
+The resulting output file can then be used to generate assessment and business cases in Azure Migrate (more info here: https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
+
 ### Default Values
 If you do not specify a value for CPU or Memory utilization, the tool will default to 50%. This is a general average and may not reflect the actual utilization of your environment. It's recommended to adjust these values based on monitoring data if available.
 
