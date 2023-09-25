@@ -1,27 +1,3 @@
-function Log {
-    param (
-        [Parameter(Mandatory=$true)]
-        [string]$Message,
-
-        [Parameter(Mandatory=$false)]
-        [ValidateSet("INFO", "DEBUG", "ERROR")]
-        [string]$Level = "INFO"
-    )
-
-    $timestamp = Get-Date -Format "HH:mm:ss"
-    switch ($Level) {
-        "INFO" {
-            Write-Host "[$timestamp] INFO     $Message" -ForegroundColor Yellow
-        }
-        "DEBUG" {
-            Write-Host "[$timestamp] DEBUG    $Message" -ForegroundColor DarkYellow
-        }
-        "ERROR" {
-            Write-Host "[$timestamp] ERROR    $Message" -ForegroundColor Red
-        }
-    }
-}
-
 function Read-RVToolsData {
     param (
         [Parameter(Mandatory=$true)]
@@ -49,22 +25,22 @@ function Read-RVToolsData {
     $MIB_TO_MB_CONVERSION_FACTOR = 1.04858
     $DEFAULT_OS_NAME = "Windows Server 2019 Datacenter"
 
-    # Logging the initial information
-    Log "Input file: $InputFile" -Level DEBUG
-    Log "Anonymized: $($Anonymized.IsPresent)" -Level DEBUG
-    Log "Filter powered-off VMs: $($ExcludePoweredOff.IsPresent)" -Level DEBUG
-    Log "Filter templates: $($ExcludeTemplates.IsPresent)" -Level DEBUG
-    Log "Filter SRM: $($ExcludeSRM.IsPresent)" -Level DEBUG
-    Log "Enhanced Disk Info: $($EnhancedDiskInfo.IsPresent)" -Level DEBUG
+    # Logging the initial information using native cmdlets
+    Write-Warning "Input file: $InputFile"
+    Write-Warning "Anonymized: $($Anonymized.IsPresent)"
+    Write-Warning "Filter powered-off VMs: $($ExcludePoweredOff.IsPresent)"
+    Write-Warning "Filter templates: $($ExcludeTemplates.IsPresent)"
+    Write-Warning "Filter SRM: $($ExcludeSRM.IsPresent)"
+    Write-Warning "Enhanced Disk Info: $($EnhancedDiskInfo.IsPresent)"
 
     # Import the data from the Excel file
     $rvtools_data = Import-Excel -Path $InputFile -WorksheetName $VINFO_SHEET_NAME
-    if ($EnhancedDiskInfo.IsPresent) {
-        $disk_data = Import-Excel -Path $InputFile -WorksheetName $VDISK_SHEET_NAME
-    }
 
-    # Logging the total number of VMs processed
-    Log "We have processed $counter VMs out of $($rvtools_data.Count) found in the file $InputFile" -Level INFO
+    # If EnhancedDiskInfo is selected, import disk data
+    $disk_data = @{}
+    if ($EnhancedDiskInfo) {
+        $disk_data = Import-Excel -Path $InputFile -WorksheetName $VDISK_SHEET_NAME | Group-Object -Property VM
+    }
 
     # Process each row and create a custom PS object
     $counter = 0
@@ -98,21 +74,11 @@ function Read-RVToolsData {
         }
         $storage_capacity_gb = [math]::Round($storage_capacity / 1024, 2)
 
-        if ($EnhancedDiskInfo.IsPresent) {
-            # Extract disk-related data for the current VM from the vDisk tab
-            $vm_disks = $disk_data | Where-Object { $_.$VM_COLUMN_NAME -eq $vmName }
-
-            $disk_details_array = $vm_disks | ForEach-Object {
-                # Using 'Capacity MiB' for provisioned size
-                Log "Provisioned MiB for $($_.Disk): $($_.'Capacity MiB')" -Level DEBUG
-
-                "$($_.Disk): Provisioned: $($_.'Capacity MiB') MiB, In Use: N/A MiB"
-            }
-            $disk_details = $disk_details_array -join "; "
-        } else {
-            # Use simpler values from vInfo tab
-            $disk_details = "Provisioned: $($_.'Provisioned MiB') MiB, In Use: N/A MiB"
-        }
+        # Disk details
+        $vm_disks = $disk_data[$vmName].Group
+        $disk_details = $vm_disks | ForEach-Object {
+            "Hard disk $($_.Disk): Provisioned: $($_.'Capacity MiB') MiB, In Use: $($_.'In Use MiB') MiB"
+        } -join "; "
 
         [PSCustomObject]@{
             name              = $vmName
@@ -135,7 +101,7 @@ function Read-RVToolsData {
         }
 
         # Logging each VM processed
-        Log "Processed VM $vmName -> $($_.$POWERSTATE_COLUMN_NAME) ($counter/$($rvtools_data.Count))" -Level DEBUG
+        Write-Verbose "Processed VM $vmName -> $($_.$POWERSTATE_COLUMN_NAME) ($counter/$($rvtools_data.Count))"
 
     } | Where-Object {
         (-not $ExcludePoweredOff -or $_.power_state -ne "poweredOff") -and
@@ -146,6 +112,7 @@ function Read-RVToolsData {
     # Return the processed data
     return $output
 }
+
 
 
 
