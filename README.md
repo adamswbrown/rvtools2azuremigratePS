@@ -49,7 +49,7 @@ Allowed values are 50, 90, 95, or any integer between 0 and 100.
 ### Why provide option?
 This enhancement provides users with the flexibility to choose the storage metric that best fits their migration or analysis needs. Whether you want to consider the total provisioned storage, the actual storage in use, or the total disk capacity, you now have the option to do so with ease
 
-## 3. Uplaod file to Azure Migrate
+## 3. Upload file to Azure Migrate
 
 The resulting file can then be used to uplaod to Azure Migrate (https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
 
