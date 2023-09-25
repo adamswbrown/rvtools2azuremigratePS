@@ -91,5 +91,5 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv 
 #Read RVTools 
 $convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"
 #Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization Custom -MemoryUtilizationPercentage Custom
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization [0-100] -MemoryUtilizationPercentage [0-100]
 ```
