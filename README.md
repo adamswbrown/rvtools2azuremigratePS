@@ -53,7 +53,9 @@ The resulting output file can then be used to generate assessment and business c
 If you do not specify a value for CPU or Memory utilization, the tool will default to 50%. This is a general average and may not reflect the actual utilization of your environment. It's recommended to adjust these values based on monitoring data if available.
 
 ## Specifying Utilization
-You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV.
+You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV. 
+
+Allowed values are 50, 90, 95, or any integer between 0 and 100."
 
 For example:
 
