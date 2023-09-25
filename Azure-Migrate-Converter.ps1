@@ -74,6 +74,7 @@ function Read-RVToolsData {
         }
         $storage_capacity_gb = [math]::Round($storage_capacity / 1024, 2)
 
+        $nics = if ($null -ne $_.NICs -and $_.NICs -ne "") { $_.NICs } else { 0 }
 
 
     if ($EnhancedDiskInfo) {
@@ -104,6 +105,8 @@ function Read-RVToolsData {
             firmware          = $_.$FIRMWARE_COLUMN_NAME
             number_of_disks   = $_.Disks
             disk_details      = $disk_details
+            nics             = $NICs
+
         }
 
         # Logging each VM processed
@@ -174,7 +177,7 @@ function ConvertTo-AzMigrateCSV {
             "Hypervisor"                               = "Vmware"
             "CPU utilization percentage"               = $CPUUtilizationPercentage
             "Memory utilization percentage"            = $MemoryUtilizationPercentage
-            "Network adapters"                         = ""
+            "Network adapters"                         = if ($_.NICs) { $_.NICs } else { 0 }
             "Network In throughput"                    = ""
             "Network Out throughput"                   = ""
             "Boot type"                                = if ($_.firmware -eq "bios") { "BIOS" } else { "UEFI" }
