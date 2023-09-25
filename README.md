@@ -37,9 +37,11 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv
 - `-CPUUtilizationPercentage`: Specify the CPU utilization percentage. Default is 50%, Use 'Custom' to specify your own values
 - `-MemoryUtilizationPercentage`: Specify the Memory utilization percentage. Default is 50%. Use 'Custom' to specify your own values
 
-## Uplaod file to Azure Migrate
+## 3. Uplaod file to Azure Migrate
 
 The resulting file can then be used to uplaod to Azure Migrate (https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
+
+# Usage Notes
 
 ## CPU and Memory Utilization
 
@@ -47,10 +49,10 @@ Azure Migrate requires CPU and Memory utilization percentages for a more accurat
 
 The resulting output file can then be used to generate assessment and business cases in Azure Migrate (more info here: https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
 
-### Default Values
+## Default Values
 If you do not specify a value for CPU or Memory utilization, the tool will default to 50%. This is a general average and may not reflect the actual utilization of your environment. It's recommended to adjust these values based on monitoring data if available.
 
-### Specifying Utilization
+## Specifying Utilization
 You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV.
 
 For example:
@@ -60,7 +62,7 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv
 ```
 In the above command, the CPU utilization is set to 90% and Memory utilization is set to 75%.
 
-### Recommendations
+## Recommendations
 - **50%**: This is the default value and represents a general average. Use this if you do not have specific monitoring data.
 - **90%**: Represents a high-utilization scenario. This might be suitable for production environments with consistent high loads.
 - **95%**: Represents a very high-utilization scenario, nearing capacity. Use this to simulate scenarios where the environment is running close to its limits.
@@ -69,9 +71,9 @@ If you have monitoring tools in place, it's best to use the average utilization 
 
 
 
-### Examples:
+# Examples:
 
-#### Using Default Utilization Values:
+## Using Default Utilization Values:
 ```powershell
 # Example usage:
 #Read RVTools 
@@ -79,7 +81,7 @@ $convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"
 #Make Azure Migrate
 ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
 ```
-#### Using Custom Utilization Values:
+## Using Custom Utilization Values:
 ```powershell
 # Example usage:
 #Read RVTools 
