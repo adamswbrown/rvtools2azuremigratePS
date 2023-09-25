@@ -157,11 +157,25 @@ function ConvertTo-AzMigrateCSV {
         [Parameter(Mandatory=$true)]
         [string]$OutputFile,
 
-        [ValidateSet("50", "90", "95", "Custom")]
-        [string]$CPUUtilizationPercentage = "50",
-
-        [ValidateSet("50", "90", "95", "Custom")]
-        [string]$MemoryUtilizationPercentage = "50"
+        [Parameter(Mandatory=$false)]
+        [ValidateScript({
+            if ($_ -in @(50, 90, 95) -or ($_ -ge 0 -and $_ -le 100)) {
+                $true
+            } else {
+                throw "Invalid value for CPUUtilizationPercentage. Allowed values are 50, 90, 95, or any integer between 0 and 100."
+            }
+        })]
+        [int]$CPUUtilizationPercentage = 50,
+        
+        [Parameter(Mandatory=$false)]
+        [ValidateScript({
+            if ($_ -in @(50, 90, 95) -or ($_ -ge 0 -and $_ -le 100)) {
+                $true
+            } else {
+                throw "Invalid value for MemoryUtilizationPercentage. Allowed values are 50, 90, 95, or any integer between 0 and 100."
+            }
+        })]
+        [int]$MemoryUtilizationPercentage = 50
     )
 
     # Prompt for custom percentages if "Custom" is selected
@@ -221,36 +235,4 @@ function ConvertTo-AzMigrateCSV {
 $convertedData = Read-RVToolsData -InputFile "/Users/adamswbrown/Developer/RV2AZMigPS/Testing/Small/TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx"
 $convertedData | export-csv output.csv
 #Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
-
-
-
-
-# Example usage:
-# $convertedData = Read-RVToolsData -InputFile "path_to_your_excel_file.xlsx" -ExcludePoweredOff -ExcludeTemplates -ExcludeSRM
-# $convertedData | Format-Table
-
-
-
-
-
-
-
-# Example usage:
-#$convertedData = Read-RVToolsData -InputFile "/Users/adamswbrown/Developer/RV2AZMigPS/Testing/Small/TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx"
-#$convertedData | Format-Table
-#$convertedData | Export-Csv -Path "output.csv" -NoTypeInformation
-
-#Generate Azure Migate Ouput
-#ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "path_to_output.csv"
-
-
-
-# Example usage:
- $convertedData = Read-RVToolsData -InputFile "/Users/adamswbrown/Developer/RV2AZMigPS/Testing/Small/TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx" -ExcludePoweredOff -ExcludeTemplates -ExcludeSRM -Anonymized
- $convertedData | Format-Table
-
-
-# Example usage:
-$convertedData = Read-RVToolsData -InputFile "/Users/adamswbrown/Developer/RV2AZMigPS/Testing/Small/TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx" -Anonymized
-$convertedData | Format-Table
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 40 -MemoryUtilization 30
