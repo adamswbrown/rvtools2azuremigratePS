@@ -7,7 +7,10 @@ function Read-RVToolsData {
         [switch]$ExcludeTemplates,
         [switch]$ExcludeSRM,
         [switch]$Anonymized,
-        [switch]$EnhancedDiskInfo = $false
+        [switch]$EnhancedDiskInfo = $false,
+
+        [ValidateSet("TotalDiskCapacity", "Provisioned", "InUse")]
+        [string]$StorageType = "Provisioned"
     )
 
     # Constants
@@ -18,7 +21,6 @@ function Read-RVToolsData {
     $CPU_COLUMN_NAME = "CPUs"
     $OS_VMTOOLS_COLUMN_NAME = "OS according to the VMware Tools"
     $OS_CONFIG_COLUMN_NAME = "OS according to the configuration file"
-    $STORAGE_COLUMN_NAME = "Provisioned MiB"
     $PRIMARY_IP_COLUMN_NAME = "Primary IP Address"
     $DNS_NAME_COLUMN_NAME = "DNS Name"
     $FIRMWARE_COLUMN_NAME = "Firmware"
@@ -32,6 +34,7 @@ function Read-RVToolsData {
     Write-Warning "Filter templates: $($ExcludeTemplates.IsPresent)"
     Write-Warning "Filter SRM: $($ExcludeSRM.IsPresent)"
     Write-Warning "Enhanced Disk Info: $($EnhancedDiskInfo.IsPresent)"
+    Write-Information "Using storage type: $StorageType"
 
     # Import the data from the Excel file
     $rvtools_data = Import-Excel -Path $InputFile -WorksheetName $VINFO_SHEET_NAME
@@ -66,27 +69,30 @@ function Read-RVToolsData {
 
         $vmName = if ($Anonymized.IsPresent) { $_."VM UUID" } else { $_.$VM_COLUMN_NAME -replace " ", "_" }
 
-        $storage_capacity = $_.$STORAGE_COLUMN_NAME
-        $is_mib = $storage_capacity -eq $_.$STORAGE_COLUMN_NAME
+        # Determine storage value based on the StorageType
+        switch ($StorageType) {
+            "TotalDiskCapacity" { $storageValueColumn = "Total disk capacity MiB" }
+            "Provisioned"       { $storageValueColumn = "Provisioned MiB" }
+            "InUse"             { $storageValueColumn = "In use MiB" }
+        }
+        $storage_capacity = $_.$storageValueColumn
+        $is_mib = $storage_capacity -eq $_.$storageValueColumn
 
         if ($is_mib) {
             $storage_capacity = [math]::Round($storage_capacity / $MIB_TO_MB_CONVERSION_FACTOR, 2)
         }
         $storage_capacity_gb = [math]::Round($storage_capacity / 1024, 2)
 
-        $NICS = if ($null -ne $_.NICs -and $_.NICs -ne "") { $_.NICs } else { 0 }
+        $nics = if ($null -ne $_.NICs -and $_.NICs -ne "") { $_.NICs } else { 0 }
 
+        if ($EnhancedDiskInfo) {
+            $disk_details = ($disk_data[$_.VM] | ForEach-Object {
+                "Hard disk $($_.Disk): Provisioned: $($_.'Capacity MiB') MiB, In Use: $($_.'In Use MiB') MiB"
+            }) -join ";"
+        } else {
+            $disk_details = ""
+        }
 
-    if ($EnhancedDiskInfo) {
-        # Disk details
-
-        $disk_data = ($vm_disks | ForEach-Object {
-            "Hard disk $($_.Disk): Provisioned: $($_.'Capacity MiB') MiB, In Use: $($_.'In Use MiB') MiB"
-        }) -join ";"
-    }
-        
-        
-        
         [PSCustomObject]@{
             name              = $vmName
             power_state       = $_.$POWERSTATE_COLUMN_NAME
@@ -105,8 +111,7 @@ function Read-RVToolsData {
             firmware          = $_.$FIRMWARE_COLUMN_NAME
             number_of_disks   = $_.Disks
             disk_details      = $disk_details
-            nics             = $NICs
-
+            nics              = $nics
         }
 
         # Logging each VM processed
@@ -121,7 +126,6 @@ function Read-RVToolsData {
     # Return the processed data
     return $output
 }
-
 
 
 
