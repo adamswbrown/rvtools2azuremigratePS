@@ -230,9 +230,3 @@ function ConvertTo-AzMigrateCSV {
 }
 
 
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "/Users/adamswbrown/Developer/RV2AZMigPS/Testing/Small/TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx"
-$convertedData | export-csv output.csv
-#Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 40 -MemoryUtilization 30
