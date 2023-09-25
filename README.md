@@ -37,6 +37,8 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv
 - `-CPUUtilizationPercentage`: Specify the CPU utilization percentage. Default is 50%, Use 'Custom' to specify your own values
 - `-MemoryUtilizationPercentage`: Specify the Memory utilization percentage. Default is 50%. Use 'Custom' to specify your own values
 
+Allowed values are 50, 90, 95, or any integer between 0 and 100.
+
 ## 3. Uplaod file to Azure Migrate
 
 The resulting file can then be used to uplaod to Azure Migrate (https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
@@ -55,7 +57,7 @@ If you do not specify a value for CPU or Memory utilization, the tool will defau
 ## Specifying Utilization
 You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV. 
 
-Allowed values are 50, 90, 95, or any integer between 0 and 100."
+Allowed values are 50, 90, 95, or any integer between 0 and 100.
 
 For example:
 
