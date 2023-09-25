@@ -38,13 +38,12 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv
 ### Options:
 - `-CPUUtilizationPercentage`: Specify the CPU utilization percentage. Default is 50%, Allowed values are 50, 90, 95, or any integer between 0 and 100.
 - `-MemoryUtilizationPercentage`: Specify the Memory utilization percentage. Default is 50%. Allowed values are 50, 90, 95, or any integer between 0 and 100.
-Allowed values are 50, 90, 95, or any integer between 0 and 100.
 - `-StorageType`: Determines which storage column from the RVTools output to use. 
     - **TotalDiskCapacity**: Uses the "Total Disk capacity MiB" column.
     - **Provisioned**: Uses the "Provisioned MiB" column (default).
     - **InUse**: Uses the "In use MiB" column.
 
-
+Allowed values are 50, 90, 95, or any integer between 0 and 100.
 
 
 ### Why provide option?
@@ -72,8 +71,14 @@ Allowed values are 50, 90, 95, or any integer between 0 and 100.
 
 ## Storage Calculation (RV Tools Input)
 - **TotalDiskCapacity%**: Uses the "Total Disk capacity MiB" column.
+This option uses the Total Disk Capacity in MiB value from RV Tools Input
+The sum of all "Capacity MiB" columns in the tab page vDisk for this VM.
 - **Provisioned%**: Uses the "Provisioned MiB" column (default).
-- **InUse%**: Uses the "In use MiB" column.
+This option uses the TProvisioned MiB value from RV Tools Input
+Total storage space, in MiB, committed to this virtual machine across all datastores.
+Essentially an aggregate of the property commited across all datastores that this virtual machine is located on.
+- **InUse%**: Uses the "In use MiB" column value from RV Tools Input
+Storage in use, space in MiBs, used by this virtual machine on all datastores.
 
 
 For example:
@@ -94,11 +99,63 @@ If you have monitoring tools in place, it's best to use the average utilization 
 
 # Examples:
 
+
+
+## Using Filering Swiches 
+
+### Exclude Powered off
+```powershell
+# Example usage:
+#Read RVTools 
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx" -ExcludePoweredOff -ExcludeTemplates -ExcludeSRM -StorageType InUse
+
+#Make Azure Migrate
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
+```
+
+
+### Exclude SRM 
+```powershell
+# Example usage:
+#Read RVTools 
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"   -ExcludeSRM
+
+#Make Azure Migrate
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
+```
+
+### Exclude Templates
+```powershell
+# Example usage:
+#Read RVTools 
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"  -ExcludeTemplates 
+```
+
+### Change Stroage Calculation Type
+```powershell
+# Example usage:
+#Read RVTools 
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"  -StorageType [TotalDiskCapacity/Provisioned/InUse] 
+
+#Make Azure Migrate
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
+```
+
+
+# Make Azure Migrate Export - Default values
+
+```powershell
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
+
+```
+
+
+
 ## Using Default Utilization Values:
 ```powershell
 # Example usage:
 #Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"
+$convertedData = Read-RVToolsData -InputFile 
 #Make Azure Migrate
 ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
 ```
@@ -106,7 +163,8 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv 
 ```powershell
 # Example usage:
 #Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx" 
 #Make Azure Migrate
 ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization [0-100] -MemoryUtilizationPercentage [0-100]
 ```
+
