@@ -154,6 +154,11 @@ function ConvertTo-AzMigrateCSV {
         [int]$MemoryUtilizationPercentage = 50
     )
 
+    # Logging the initial information using native cmdlets
+    Write-Information "CPU Utilization Percentage: $CPUUtilizationPercentage"
+    Write-Information "Memory Utilization Percentage: $MemoryUtilizationPercentage"
+    Write-Information "Output file path: $OutputFile"
+
     # Convert RVTools data to Azure Migrate CSV format
     $csvData = $RVToolsData | ForEach-Object {
         @{
