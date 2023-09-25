@@ -55,20 +55,6 @@ The resulting file can then be used to uplaod to Azure Migrate (https://learn.mi
 
 # Usage Notes
 
-## CPU and Memory Utilization (Azure Migrate Output)
-
-Azure Migrate requires CPU and Memory utilization percentages for a more accurate assessment. This tool provides flexibility in specifying these values to better match your environment's actual utilization or to simulate different scenarios.
-
-The resulting output file can then be used to generate assessment and business cases in Azure Migrate (more info here: https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
-
-## Default Values
-If you do not specify a value for CPU or Memory utilization, the tool will default to 50%. This is a general average and may not reflect the actual utilization of your environment. It's recommended to adjust these values based on monitoring data if available.
-
-## Specifying Utilization
-You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV. 
-
-Allowed values are 50, 90, 95, or any integer between 0 and 100.
-
 ## Storage Calculation (RV Tools Input)
 - **TotalDiskCapacity%**: Uses the "Total Disk capacity MiB" column.
 This option uses the Total Disk Capacity in MiB value from RV Tools Input
@@ -80,6 +66,23 @@ Essentially an aggregate of the property commited across all datastores that thi
 - **InUse%**: Uses the "In use MiB" column value from RV Tools Input
 Storage in use, space in MiBs, used by this virtual machine on all datastores.
 
+
+## CPU and Memory Utilization (Azure Migrate Output)
+
+Azure Migrate requires CPU and Memory utilization percentages for a more accurate assessment. This tool provides flexibility in specifying these values to better match your environment's actual utilization or to simulate different scenarios.
+
+The resulting output file can then be used to generate assessment and business cases in Azure Migrate (more info here: https://learn.microsoft.com/en-us/azure/migrate/tutorial-discover-import)
+
+
+# Default Values
+If you do not specify a value for CPU or Memory utilization, the tool will default to 50%. This is a general average and may not reflect the actual utilization of your environment. It's recommended to adjust these values based on monitoring data if available.
+If you do not specify a value for the Storage Calculation, it will default to Provisioned. This value uses Total storage space, in MiB, committed to this virtual machine across all datastores.
+Essentially an aggregate of the property commited across all datastores that this virtual machine is located on.
+
+
+# Specifying Utilization
+You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV. 
+Allowed values are 50, 90, 95, or any integer between 0 and 100.
 
 For example:
 
@@ -99,7 +102,7 @@ If you have monitoring tools in place, it's best to use the average utilization 
 
 # Examples:
 
-
+#Pharse RV Tools Input
 
 ## Using Filering Swiches 
 
@@ -107,7 +110,7 @@ If you have monitoring tools in place, it's best to use the average utilization 
 ```powershell
 # Example usage:
 #Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx" -ExcludePoweredOff -ExcludeTemplates -ExcludeSRM -StorageType InUse
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx" -ExcludePoweredOff
 
 #Make Azure Migrate
 ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
