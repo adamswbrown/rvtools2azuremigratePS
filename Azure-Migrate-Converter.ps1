@@ -74,7 +74,7 @@ function Read-RVToolsData {
         }
         $storage_capacity_gb = [math]::Round($storage_capacity / 1024, 2)
 
-        $nics = if ($null -ne $_.NICs -and $_.NICs -ne "") { $_.NICs } else { 0 }
+        $NICS = if ($null -ne $_.NICs -and $_.NICs -ne "") { $_.NICs } else { 0 }
 
 
     if ($EnhancedDiskInfo) {
