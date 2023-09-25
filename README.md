@@ -25,6 +25,8 @@ $convertedData = Read-RVToolsData -InputFile "path_to_RVTools_output.xlsx"
 - `-ExcludeSRM`: Exclude SRM placeholders.
 - `-Anonymized`: Anonymize VM names using their UUIDs.
 - `-EnhancedDiskInfo`: (In Development - Do Not Use) Provides detailed disk information.
+- `-StorageType` to provide more flexibility in selecting the storage data you want to use from the RVTools output. (Defaults to Provisioned MiB)
+
 
 ## 2. Generate Azure Migrate CSV
 To generate a CSV file in the Azure Migrate import format:
@@ -34,10 +36,19 @@ ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv
 ```
 
 ### Options:
-- `-CPUUtilizationPercentage`: Specify the CPU utilization percentage. Default is 50%, Use 'Custom' to specify your own values
-- `-MemoryUtilizationPercentage`: Specify the Memory utilization percentage. Default is 50%. Use 'Custom' to specify your own values
-
+- `-CPUUtilizationPercentage`: Specify the CPU utilization percentage. Default is 50%, Allowed values are 50, 90, 95, or any integer between 0 and 100.
+- `-MemoryUtilizationPercentage`: Specify the Memory utilization percentage. Default is 50%. Allowed values are 50, 90, 95, or any integer between 0 and 100.
 Allowed values are 50, 90, 95, or any integer between 0 and 100.
+- `-StorageType`: Determines which storage column from the RVTools output to use. 
+    - **TotalDiskCapacity**: Uses the "Total Disk capacity MiB" column.
+    - **Provisioned**: Uses the "Provisioned MiB" column (default).
+    - **InUse**: Uses the "In use MiB" column.
+
+
+
+
+### Why provide option?
+This enhancement provides users with the flexibility to choose the storage metric that best fits their migration or analysis needs. Whether you want to consider the total provisioned storage, the actual storage in use, or the total disk capacity, you now have the option to do so with ease
 
 ## 3. Uplaod file to Azure Migrate
 
@@ -45,7 +56,7 @@ The resulting file can then be used to uplaod to Azure Migrate (https://learn.mi
 
 # Usage Notes
 
-## CPU and Memory Utilization
+## CPU and Memory Utilization (Azure Migrate Output)
 
 Azure Migrate requires CPU and Memory utilization percentages for a more accurate assessment. This tool provides flexibility in specifying these values to better match your environment's actual utilization or to simulate different scenarios.
 
@@ -58,6 +69,12 @@ If you do not specify a value for CPU or Memory utilization, the tool will defau
 You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV. 
 
 Allowed values are 50, 90, 95, or any integer between 0 and 100.
+
+## Storage Calculation (RV Tools Input)
+- **TotalDiskCapacity%**: Uses the "Total Disk capacity MiB" column.
+- **Provisioned%**: Uses the "Provisioned MiB" column (default).
+- **InUse%**: Uses the "In use MiB" column.
+
 
 For example:
 
