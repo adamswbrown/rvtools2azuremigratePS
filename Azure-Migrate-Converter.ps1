@@ -34,7 +34,7 @@ function Read-RVToolsData {
     Write-Warning "Filter templates: $($ExcludeTemplates.IsPresent)"
     Write-Warning "Filter SRM: $($ExcludeSRM.IsPresent)"
     Write-Warning "Enhanced Disk Info: $($EnhancedDiskInfo.IsPresent)"
-    Write-Information "Using storage type: $StorageType"
+    Write-Warning "Using storage type: $StorageType"
 
     # Import the data from the Excel file
     $rvtools_data = Import-Excel -Path $InputFile -WorksheetName $VINFO_SHEET_NAME
