@@ -154,15 +154,6 @@ function ConvertTo-AzMigrateCSV {
         [int]$MemoryUtilizationPercentage = 50
     )
 
-    # Prompt for custom percentages if "Custom" is selected
-    if ($CPUUtilizationPercentage -eq "Custom") {
-        $CPUUtilizationPercentage = Read-Host "Enter custom CPU utilization percentage"
-    }
-
-    if ($MemoryUtilizationPercentage -eq "Custom") {
-        $MemoryUtilizationPercentage = Read-Host "Enter custom memory utilization percentage"
-    }
-
     # Convert RVTools data to Azure Migrate CSV format
     $csvData = $RVToolsData | ForEach-Object {
         @{
@@ -199,7 +190,7 @@ function ConvertTo-AzMigrateCSV {
     # Export the data to a CSV file
     try {
         $csvData | Export-Csv -Path $OutputFile -NoTypeInformation
-        Write-Host "CSV file saved to $OutputFile"
+        Write-Information "CSV file saved to $OutputFile"
     } catch {
         Write-Error $_.Exception.Message
     }
