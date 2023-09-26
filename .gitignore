@@ -2,3 +2,4 @@ AzureMigrate.csv
 Azure-Migrate-Converter.ps1
 output.csv
 Run.ps1
+.DS_Store
