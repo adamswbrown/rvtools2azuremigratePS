@@ -8,8 +8,30 @@ This tool is designed to process the output from RVTools and convert it into a f
   
 - **Modules**:
   - `ImportExcel`: This module is used to read the RVTools Excel output. You can install it using `Install-Module -Name ImportExcel -Scope CurrentUser`.
+ 
+## Data Collection using RVTools
 
-## Usage
+To ensure the highest fidelity of data for the migration process, it's essential to gather comprehensive information from your VMware environment. One of the best tools for this purpose is RVTools.
+
+### Downloading RVTools
+
+You can download RVTools from its official website: [RVTools - Download](https://www.robware.net/rvtools/)
+
+### Exporting Data from RVTools
+
+Once you have RVTools installed, you can connect to a vCenter and export all the necessary data. Here's a sample command to achieve this:
+
+
+```powershell
+RVTools.exe -s vcsa.corp.contoso.com -passthrough -c ExportAll2xlsx
+```
+
+This command connects to the specified vCenter (`vcsa.corp.contoso.com` in this case) using pass-through authentication. It then exports data from all tabs to an Excel file in the current directory with the default filename.
+
+Ensure you have the necessary permissions and network access to connect to the vCenter and retrieve the data.
+
+
+# Usage
 
 ### 1. Process RVTools Output
 
