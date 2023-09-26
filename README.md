@@ -84,12 +84,69 @@ Essentially an aggregate of the property commited across all datastores that thi
 You can specify the CPU and Memory utilization percentages using the `-CPUUtilizationPercentage` and `-MemoryUtilizationPercentage` switches respectively when generating the Azure Migrate CSV. 
 Allowed values are 50, 90, 95, or any integer between 0 and 100.
 
-For example:
+
+# Examples of Using the Tool
+
+The tool is designed to be intuitive and flexible, catering to various scenarios. Below are some examples to help you get started:
+
+## Basic Usage
+To simply convert RVTools data to Azure Migrate CSV format with default settings:
 
 ```powershell
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv" -CPUUtilizationPercentage "90" -MemoryUtilizationPercentage "75"
+$convertedData = Read-RVToolsData -InputFile "path_to_file.xlsx"
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv"
 ```
-In the above command, the CPU utilization is set to 90% and Memory utilization is set to 75%.
+
+## Excluding Specific VMs
+If you want to exclude powered-off VMs, templates, and SRM placeholders:
+
+### Powered Off 
+
+```powershell
+$convertedData = Read-RVToolsData -InputFile "path_to_file.xlsx" -ExcludePoweredOff
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv"
+```
+### SRM
+
+```powershell
+$convertedData = Read-RVToolsData -InputFile "path_to_file.xlsx"
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv"
+```
+
+### Template Objects 
+
+```powershell
+$convertedData = Read-RVToolsData -InputFile "path_to_file.xlsx" -ExcludeTemplates
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv"
+```
+
+
+## Using Different Storage Metrics
+
+```powershell
+$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"  -StorageType [TotalDiskCapacity/Provisioned/InUse] 
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv"
+```
+
+## Values Explained
+- **TotalDiskCapacity%**: Uses the "Total Disk capacity MiB" column.
+This option uses the Total Disk Capacity in MiB value from RV Tools Input
+The sum of all "Capacity MiB" columns in the tab page vDisk for this VM.
+- **Provisioned%**: Uses the "Provisioned MiB" column (default).
+This option uses the TProvisioned MiB value from RV Tools Input
+Total storage space, in MiB, committed to this virtual machine across all datastores.
+Essentially an aggregate of the property commited across all datastores that this virtual machine is located on.
+- **InUse%**: Uses the "In use MiB" column value from RV Tools Input
+Storage in use, space in MiBs, used by this virtual machine on all datastores.
+
+
+
+## Custom CPU and Memory Utilization
+To specify custom CPU and memory utilization percentages:
+```powershell
+$convertedData = Read-RVToolsData -InputFile "path_to_file.xlsx"
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv" -CPUUtilization 60 -MemoryUtilization 70
+```
 
 ## Recommendations
 - **50%**: This is the default value and represents a general average. Use this if you do not have specific monitoring data.
@@ -98,76 +155,16 @@ In the above command, the CPU utilization is set to 90% and Memory utilization i
 
 If you have monitoring tools in place, it's best to use the average utilization values from those tools for a more accurate assessment.
 
-
-
-# Examples:
-
-#Pharse RV Tools Input
-
-## Using Filering Swiches 
-
-### Exclude Powered off
-```powershell
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx" -ExcludePoweredOff
-
-#Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
-```
-
-
-### Exclude SRM 
-```powershell
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"   -ExcludeSRM
-
-#Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
-```
-
-### Exclude Templates
-```powershell
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"  -ExcludeTemplates 
-```
-
-### Change Stroage Calculation Type
-```powershell
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx"  -StorageType [TotalDiskCapacity/Provisioned/InUse] 
-
-#Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
-```
-
-
-# Make Azure Migrate Export - Default values
+## Anonymizing Data
+If you want to anonymize the VM names:
 
 ```powershell
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
+$convertedData = Read-RVToolsData -InputFile "path_to_file.xlsx" -Anonymized
+ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile "AzureMigrate.csv"
 
-```
+#Tips:
 
+Always review the output CSV to ensure the data looks correct before using it for migration.
+Regularly update the tool to benefit from new features and improvements.
 
-
-## Using Default Utilization Values:
-```powershell
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile 
-#Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization 50 -MemoryUtilization 50
-```
-## Using Custom Utilization Values:
-```powershell
-# Example usage:
-#Read RVTools 
-$convertedData = Read-RVToolsData -InputFile "Path/to/rvtools/output.xlsx" 
-#Make Azure Migrate
-ConvertTo-AzMigrateCSV -RVToolsData $convertedData -OutputFile AzureMigrate.csv -CPUUtilization [0-100] -MemoryUtilizationPercentage [0-100]
-```
 
