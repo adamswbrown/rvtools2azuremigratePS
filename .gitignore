@@ -2,3 +2,24 @@ AzureMigrate.csv
 Azure-Migrate-Converter.ps1
 output.csv
 Run.ps1
+Testing/.DS_Store
+Testing/Large/.DS_Store
+Testing/Large/gig01srvcldman1 RVTools_export_all_2023-05-18_11.59.44.xlsx
+Testing/Large/gig01srvhpsvhm1 done RVTools_export_all_2023-05-18_11.04.04.xlsx
+Testing/Large/gig01srvisochm1 RVTools_export_all_2023-05-18_11.57.26.xlsx
+Testing/Large/gig01srvlmsvhm1 RVTools_export_all_2023-05-18_10.39.49.xlsx
+Testing/Large/gig01srvvcfchm1 RVTools_export_all_2023-05-18_10.43.03.xlsx
+Testing/Large/gig01srvvcfchm2 RVTools_export_all_2023-05-18_10.44.44.xlsx
+Testing/Large/gig01srvvcfchm3 RVTools_export_all_2023-05-18_11.54.45.xlsx
+Testing/Large/gig01srvwppvhm2 RVTools_export_all_2023-05-18_10.34.17.xlsx
+Testing/Large/gig06srvhpsvhm1 RVTools_export_all_2023-05-18_11.02.44.xlsx
+Testing/Large/gig06srvhttfman RVTools_export_all_2023-05-18_11.58.42.xlsx
+Testing/Large/gig06srvisochm1 RVTools_export_all_2023-05-18_10.52.15.xlsx
+Testing/Large/gig06srvlmpvhm1 RVTools_export_all_2023-05-18_10.41.29.xlsx
+Testing/Large/gig06srvvcfchm1 RVTools_export_all_2023-05-18_10.48.17.xlsx
+Testing/Large/gig06srvvcfchm2 RVTools_export_all_2023-05-18_10.49.11.xlsx
+Testing/Large/gig06srvvcfchm3 RVTools_export_all_2023-05-18_11.55.46.xlsx
+Testing/Large/gig06srvwppvhm2 RVTools_export_all_2023-05-18_11.53.14.xlsx
+Testing/Small/~$TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx
+Testing/Small/TC1_RVTools_export_all_2023-09-14_11.56.32.xlsx
+Testing/Small/TC3_RVTools_export_all_2023-09-14_12.01.32.xlsx
