@@ -6,17 +6,21 @@ function Read-RVToolsData {
         [switch]$ExcludePoweredOff,
         [switch]$ExcludeTemplates,
         [switch]$ExcludeSRM,
-        [switch]$Anonymized,
         [switch]$EnhancedDiskInfo = $false,
 
         [ValidateSet("TotalDiskCapacity", "Provisioned", "InUse")]
-        [string]$StorageType = "Provisioned"
+        [string]$StorageType = "Provisioned",
+
+        [switch]$AnonymizedVM,   # Switch for anonymizing VM names
+        [switch]$AnonymizedDNS,  # Switch for anonymizing DNS names
+        [switch]$AnonymizedIP    # Switch for anonymizing IP addresses
     )
 
     # Constants
     $VINFO_SHEET_NAME = "vInfo"
     $VDISK_SHEET_NAME = "vDisk"
     $VM_COLUMN_NAME = "VM"
+    $VM_UUID_COLUMN_NAME = "VM UUID"
     $POWERSTATE_COLUMN_NAME = "Powerstate"
     $CPU_COLUMN_NAME = "CPUs"
     $OS_VMTOOLS_COLUMN_NAME = "OS according to the VMware Tools"
@@ -29,7 +33,9 @@ function Read-RVToolsData {
 
     # Logging the initial information using native cmdlets
     Write-Information "Input file: $InputFile"
-    Write-Warning "Anonymized: $($Anonymized.IsPresent)"
+    Write-Information "Anonymized VM: $AnonymizedVM"
+    Write-Information "Anonymized DNS: $AnonymizedDNS"
+    Write-Information "Anonymized IP: $AnonymizedIP"
     Write-Warning "Filter powered-off VMs: $($ExcludePoweredOff.IsPresent)"
     Write-Warning "Filter templates: $($ExcludeTemplates.IsPresent)"
     Write-Warning "Filter SRM: $($ExcludeSRM.IsPresent)"
@@ -67,7 +73,9 @@ function Read-RVToolsData {
             $architecture = ""
         }
 
-        $vmName = if ($Anonymized.IsPresent) { $_."VM UUID" } else { $_.$VM_COLUMN_NAME -replace " ", "_" }
+        $vmName = if ($AnonymizedVM) { $_.$VM_UUID_COLUMN_NAME } else { $_.$VM_COLUMN_NAME -replace " ", "_" }
+        $ipAddress = if ($AnonymizedIP) { $_.$PRIMARY_IP_COLUMN_NAME -replace '\d+$', '0' } else { $_.$PRIMARY_IP_COLUMN_NAME }
+        $dnsName = if ($AnonymizedDNS) { "anonymous.local" } else { $_.$DNS_NAME_COLUMN_NAME }
 
         # Determine storage value based on the StorageType
         switch ($StorageType) {
@@ -101,22 +109,20 @@ function Read-RVToolsData {
             os_config         = $osValue
             architecture      = $architecture
             storage_capacity  = $storage_capacity_gb
-            primary_ip        = $_.$PRIMARY_IP_COLUMN_NAME
-            dns_name          = $_.$DNS_NAME_COLUMN_NAME
-            uuid              = $_."VM UUID"
+            primary_ip        = $ipAddress
+            dns_name          = $dnsName
+            uuid              = $_.$VM_UUID_COLUMN_NAME
             is_template       = $_.Template
             is_srm            = $_."SRM Placeholder"
-            is_anonymized     = $Anonymized.IsPresent
+            is_anonymized     = $AnonymizedVM -or $AnonymizedDNS -or $AnonymizedIP
             is_mib            = $is_mib
             firmware          = $_.$FIRMWARE_COLUMN_NAME
             number_of_disks   = $_.Disks
             disk_details      = $disk_details
             nics              = $nics
         }
-
         # Logging each VM processed
         Write-Verbose "Processed VM $vmName -> $($_.$POWERSTATE_COLUMN_NAME) ($counter/$($rvtools_data.Count))"
-
     } | Where-Object {
         (-not $ExcludePoweredOff -or $_.power_state -ne "poweredOff") -and
         (-not $ExcludeTemplates -or $_.is_template -ne "True") -and
@@ -126,6 +132,7 @@ function Read-RVToolsData {
     # Return the processed data
     return $output
 }
+
 
 
 
