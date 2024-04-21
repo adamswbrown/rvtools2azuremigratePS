@@ -45,7 +45,9 @@ $convertedData = Read-RVToolsData -InputFile "path_to_RVTools_output.xlsx"
 - `-ExcludePoweredOff`: Exclude VMs that are powered off.
 - `-ExcludeTemplates`: Exclude VM templates.
 - `-ExcludeSRM`: Exclude SRM placeholders.
-- `-Anonymized`: Anonymize VM names using their UUIDs.
+- `-AnonymizedVM`: Anonymize VM names using their UUIDs.
+- `-AnonymizedDNS`: Replaces DNS names with "anonymous.local".
+- `-AnonymizedIP`: Anonymizes IP addresses by zeroing out the last octet.
 - `-EnhancedDiskInfo`: (In Development - Do Not Use) Provides detailed disk information.
 - `-StorageType` to provide more flexibility in selecting the storage data you want to use from the RVTools output. (Defaults to Provisioned MiB)
 
